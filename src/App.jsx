@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './App.css'
 
 const features = [
@@ -27,30 +28,65 @@ const features = [
   },
 ]
 
+const gmailLink =
+  'https://mail.google.com/mail/?view=cm&fs=1&to=ivanevic477@gmail.com'
+
+const clients = ['Eva-Prom Računovodstvo']
+
 const steps = [
   { n: '1', title: 'Describe your business', text: 'Answer a few simple questions: what you do, who you serve and how people reach you.' },
   { n: '2', title: 'Pick a look', text: 'Choose a style that fits your brand. Add your logo, colors and photos.' },
-  { n: '3', title: 'Go live', text: 'Review, publish and start getting customers online.' },
+  { n: '3', title: 'Go live', text: 'Send the information through our e-mail and we will do the rest' },
 ]
 
-const plans = [
-  { name: 'Starter', price: '€30', note: 'per month', items: ['1 website', 'Sindr subdomain', 'Contact form'], featured: false },
-  { name: 'Business', price: '$39', note: 'per month', items: ['Custom domain', 'Up to 10 pages', 'SEO tools', 'Priority support'], featured: true },
-  { name: 'Growth', price: '$79', note: 'per month', items: ['Everything in Business', 'Online booking', 'Analytics', 'Unlimited pages'], featured: false },
-]
+
+const services = ['Website development', 'Website design', 'Website management']
+
+const formEndpoint = 'https://formsubmit.co/ajax/ivanevic477@gmail.com'
 
 const year = new Date().getFullYear()
 
 function App() {
+  const [status, setStatus] = useState('idle')
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const form = e.currentTarget
+    const d = Object.fromEntries(new FormData(form))
+    setStatus('sending')
+    try {
+      const res = await fetch(formEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `Quote request from ${d.firstName} ${d.lastName}`,
+          _template: 'table',
+          _honey: d._honey,
+          name: `${d.firstName} ${d.lastName}`,
+          email: d.email,
+          country: d.country,
+          message: d.message,
+        }),
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      form.reset()
+      setStatus('sent')
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <>
       <header className="nav">
         <div className="container nav-inner">
-          <a href="#top" className="logo">sindr<span>.</span></a>
+          <a href="#top" className="logo"><img src="/sindr-logo.png" alt="Sindr" /></a>
           <nav className="nav-links" aria-label="Main">
+            <a href="#clients">Clients</a>
+            <a href="#services">Services</a>
             <a href="#features">Features</a>
             <a href="#how">How it works</a>
-            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
           </nav>
           <a href="#start" className="btn btn-small">Get started</a>
         </div>
@@ -69,6 +105,28 @@ function App() {
             <a href="#how" className="btn btn-ghost">See how it works</a>
           </div>
           <p className="hero-note">No credit card needed to get started.</p>
+        </section>
+
+        <section id="clients" className="section container">
+          <h2>Clients</h2>
+          <p className="section-lead">Businesses we have built websites for.</p>
+          <ul className="clients-list">
+            {clients.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section id="services" className="section container">
+          <h2>Services</h2>
+          <p className="section-lead">Everything you need to get and keep your business online.</p>
+          <ul className="grid">
+            {services.map((s) => (
+              <li key={s} className="card service">
+                <h3>{s}</h3>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section id="features" className="section container">
@@ -100,34 +158,66 @@ function App() {
           </div>
         </section>
 
-        <section id="pricing" className="section container">
-          <h2>Simple pricing</h2>
-          <p className="section-lead">Pick a plan. Change or cancel any time.</p>
-          <ul className="grid plans">
-            {plans.map((p) => (
-              <li key={p.name} className={p.featured ? 'card plan featured' : 'card plan'}>
-                {p.featured && <span className="badge">Most popular</span>}
-                <h3>{p.name}</h3>
-                <p className="price">{p.price} <span>{p.note}</span></p>
-                <ul className="plan-items">
-                  {p.items.map((i) => <li key={i}>{i}</li>)}
-                </ul>
-                <a href="#start" className={p.featured ? 'btn' : 'btn btn-ghost'}>Choose {p.name}</a>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <section id="start" className="cta container">
           <h2>Ready to get your business online?</h2>
           <p>Start today and have your website live this week.</p>
-          <a href="mailto:hello@sindr.example" className="btn">Get started</a>
+          <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="btn">Get started</a>
+        </section>
+
+        <section id="contact" className="section container contact-section">
+          <h2>Contact info</h2>
+          <p className="section-lead">Write to us and we will get back to you.</p>
+          <ul className="contact-cards">
+            <li className="card">
+              <h3>E-mail</h3>
+              <a href={gmailLink} target="_blank" rel="noopener noreferrer">ivanevic477@gmail.com</a>
+            </li>
+          </ul>
+
+          <h2 className="form-title">Contact us</h2>
+          <p className="section-lead">Tell us about your project or ask us anything.</p>
+          <form className="contact-form card" onSubmit={handleSubmit}>
+            <div className="form-row">
+              <label>
+                First name
+                <input name="firstName" type="text" autoComplete="given-name" required />
+              </label>
+              <label>
+                Last name
+                <input name="lastName" type="text" autoComplete="family-name" required />
+              </label>
+            </div>
+            <label>
+              E-mail
+              <input name="email" type="email" autoComplete="email" required />
+            </label>
+            <label>
+              Country
+              <input name="country" type="text" autoComplete="country-name" required />
+            </label>
+            <label>
+              Message
+              <textarea name="message" rows="5" placeholder="Write your request or question" required />
+            </label>
+            <input type="text" name="_honey" tabIndex="-1" autoComplete="off" className="honey" aria-hidden="true" />
+            <button type="submit" className="btn" disabled={status === 'sending'}>
+              {status === 'sending' ? 'Sending…' : 'Request a quote'}
+            </button>
+            {status === 'sent' && (
+              <p className="form-msg" role="status">Thank you! Your request was sent. We will get back to you soon.</p>
+            )}
+            {status === 'error' && (
+              <p className="form-msg error" role="alert">
+                Something went wrong. Please e-mail us directly at ivanevic477@gmail.com.
+              </p>
+            )}
+          </form>
         </section>
       </main>
 
       <footer className="footer">
         <div className="container footer-inner">
-          <a href="#top" className="logo">sindr<span>.</span></a>
+          <a href="#top" className="logo"><img src="/sindr-logo.png" alt="Sindr" /></a>
           <p>© {year} Sindr. All rights reserved.</p>
         </div>
       </footer>
