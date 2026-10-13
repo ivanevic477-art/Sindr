@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import './App.css'
 
 const features = [
@@ -31,7 +31,12 @@ const features = [
 const gmailLink =
   'https://mail.google.com/mail/?view=cm&fs=1&to=ivanevic477@gmail.com'
 
-const clients = ['Eva-Prom Računovodstvo']
+const clients = [
+  {
+    name: 'Eva-Prom Računovodstvo',
+    quote: 'Sindr got our accounting firm online quickly and professionally. Clients find us much easier now.',
+  },
+]
 
 const steps = [
   { n: '1', title: 'Describe your business', text: 'Answer a few simple questions: what you do, who you serve and how people reach you.' },
@@ -39,8 +44,39 @@ const steps = [
   { n: '3', title: 'Go live', text: 'Send the information through our e-mail and we will do the rest' },
 ]
 
-
-const services = ['Website development', 'Website design', 'Website management']
+const services = [
+  {
+    title: 'Website Development',
+    description: 'Custom-built, fast websites tailored to your business — no templates, no compromises.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Website Design',
+    description: 'Beautiful, modern designs that reflect your brand and make a strong first impression.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+        <line x1="9" y1="9" x2="9.01" y2="9" />
+        <line x1="15" y1="9" x2="15.01" y2="9" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Website Management',
+    description: 'We keep your site updated, secure, and running smoothly — so you can focus on your business.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
+  },
+]
 
 const formEndpoint = 'https://formsubmit.co/ajax/ivanevic477@gmail.com'
 
@@ -48,6 +84,53 @@ const year = new Date().getFullYear()
 
 function App() {
   const [status, setStatus] = useState('idle')
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const targets = document.querySelectorAll(
+      'main h2, main .section-lead, main .card, .steps li, .clients-list li, .cta, .hero-actions',
+    )
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          entry.target.classList.add('in')
+          observer.unobserve(entry.target)
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+    )
+    targets.forEach((el) => {
+      const i = Array.from(el.parentElement.children).indexOf(el)
+      el.style.setProperty('--d', `${(i % 4) * 100}ms`)
+      el.classList.add('reveal')
+      observer.observe(el)
+    })
+
+    const hero = document.querySelector('.hero')
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        const p = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight))
+        hero.style.setProperty('--hp', p.toFixed(3))
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(frame)
+      targets.forEach((el) => el.classList.remove('reveal', 'in'))
+    }
+  }, [])
+
+  // Close mobile menu on nav link click
+  const handleNavClick = () => setMenuOpen(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -88,7 +171,29 @@ function App() {
             <a href="#how">How it works</a>
             <a href="#contact">Contact</a>
           </nav>
-          <a href="#start" className="btn btn-small">Get started</a>
+          <div className="nav-right">
+            <a href="#contact" className="btn btn-small">Get started</a>
+            <button
+              className={`hamburger${menuOpen ? ' open' : ''}`}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span /><span /><span />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+          <nav className="mobile-nav" aria-label="Mobile">
+            <a href="#clients" onClick={handleNavClick}>Clients</a>
+            <a href="#services" onClick={handleNavClick}>Services</a>
+            <a href="#features" onClick={handleNavClick}>Features</a>
+            <a href="#how" onClick={handleNavClick}>How it works</a>
+            <a href="#contact" onClick={handleNavClick}>Contact</a>
+            <a href="#contact" className="btn mobile-cta" onClick={handleNavClick}>Get started</a>
+          </nav>
         </div>
       </header>
 
@@ -101,7 +206,7 @@ function App() {
             focus on running yours.
           </p>
           <div className="hero-actions">
-            <a href="#start" className="btn">Build my website</a>
+            <a href="#contact" className="btn">Build my website</a>
             <a href="#how" className="btn btn-ghost">See how it works</a>
           </div>
           <p className="hero-note">No credit card needed to get started.</p>
@@ -112,7 +217,10 @@ function App() {
           <p className="section-lead">Businesses we have built websites for.</p>
           <ul className="clients-list">
             {clients.map((c) => (
-              <li key={c}>{c}</li>
+              <li key={c.name} className="client-card">
+                <blockquote className="client-quote">"{c.quote}"</blockquote>
+                <p className="client-name">{c.name}</p>
+              </li>
             ))}
           </ul>
         </section>
@@ -122,8 +230,10 @@ function App() {
           <p className="section-lead">Everything you need to get and keep your business online.</p>
           <ul className="grid">
             {services.map((s) => (
-              <li key={s} className="card service">
-                <h3>{s}</h3>
+              <li key={s.title} className="card service">
+                <div className="service-icon">{s.icon}</div>
+                <h3>{s.title}</h3>
+                <p>{s.description}</p>
               </li>
             ))}
           </ul>
@@ -161,12 +271,13 @@ function App() {
         <section id="start" className="cta container">
           <h2>Ready to get your business online?</h2>
           <p>Start today and have your website live this week.</p>
-          <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="btn">Get started</a>
+          <a href="#contact" className="btn">Get started</a>
         </section>
 
         <section id="contact" className="section container contact-section">
-          <h2>Contact info</h2>
-          <p className="section-lead">Write to us and we will get back to you.</p>
+          <h2>Contact us</h2>
+          <p className="section-lead">Tell us about your project or ask us anything — we will get back to you.</p>
+
           <ul className="contact-cards">
             <li className="card">
               <h3>E-mail</h3>
@@ -174,8 +285,6 @@ function App() {
             </li>
           </ul>
 
-          <h2 className="form-title">Contact us</h2>
-          <p className="section-lead">Tell us about your project or ask us anything.</p>
           <form className="contact-form card" onSubmit={handleSubmit}>
             <div className="form-row">
               <label>
