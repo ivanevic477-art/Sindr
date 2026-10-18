@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { translations } from './i18n.js'
+import Intro from './Intro.jsx'
 import './App.css'
 
 const gmailLink =
@@ -80,7 +81,8 @@ function App() {
       if (frame) return
       frame = requestAnimationFrame(() => {
         frame = 0
-        const p = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight))
+        const rect = hero.getBoundingClientRect()
+        const p = Math.min(1, Math.max(0, -rect.top / rect.height))
         hero.style.setProperty('--hp', p.toFixed(3))
       })
     }
@@ -176,7 +178,9 @@ function App() {
         </div>
       </header>
 
-      <main id="top">
+      <Intro quotes={t.introQuotes} />
+
+      <main id="main">
         <section className="hero container">
           <p className="eyebrow">{t.hero.eyebrow}</p>
           <h1>{t.hero.titleA} <em>{t.hero.titleB}</em></h1>

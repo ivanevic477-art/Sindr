@@ -1,0 +1,409 @@
+/* Opening scene at the top of the page: hammer drops, fire surges, name is revealed.
+   It stays while the visitor is at the top and replays when they scroll back up. */
+.intro {
+  position: relative;
+  height: calc(100svh - 56px);
+  min-height: 520px;
+  overflow: hidden;
+  background: radial-gradient(ellipse 80% 70% at 50% 60%, #1a0d07 0%, #060405 60%, #000 100%);
+}
+.intro::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 140px;
+  background: linear-gradient(to bottom, transparent, #060607);
+  pointer-events: none;
+}
+.intro-scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.intro-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 2;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation: scroll-cue 1.8s ease-in-out infinite;
+}
+.intro-scroll:hover {
+  color: #fff;
+}
+.intro-scroll svg {
+  width: 22px;
+  height: 22px;
+}
+@keyframes scroll-cue {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 7px);
+  }
+}
+
+/* Fire */
+.intro-fire {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(900px, 140vw);
+  height: 100vh;
+  transform: translateX(-50%) scaleY(0.25);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: fire-phase 3.6s ease-out forwards;
+}
+@keyframes fire-phase {
+  0% {
+    transform: translateX(-50%) scaleY(0.2);
+    opacity: 0;
+  }
+  10% {
+    transform: translateX(-50%) scaleY(0.3);
+    opacity: 0.75;
+  }
+  30% {
+    transform: translateX(-50%) scaleY(0.32);
+    opacity: 0.8;
+  }
+  38% {
+    transform: translateX(-50%) scaleY(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) scaleY(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scaleY(0.72);
+    opacity: 0.9;
+  }
+}
+.flame {
+  position: absolute;
+  bottom: -22%;
+  left: var(--x);
+  width: var(--w);
+  height: var(--h);
+  margin-left: calc(var(--w) / -2);
+  border-radius: 50% 50% 50% 50% / 72% 72% 28% 28%;
+  background: radial-gradient(
+    ellipse 50% 92% at 50% 100%,
+    #fff6c2 0%,
+    #ffc02e 22%,
+    #ff6a10 48%,
+    rgba(214, 38, 10, 0.5) 74%,
+    transparent 100%
+  );
+  filter: blur(12px);
+  mix-blend-mode: screen;
+  transform-origin: 50% 100%;
+  animation: flicker var(--t) ease-in-out var(--fd) infinite alternate;
+}
+@keyframes flicker {
+  0% {
+    transform: scale(1, 0.82) skewX(-5deg);
+  }
+  50% {
+    transform: scale(0.9, 1.08) skewX(4deg);
+  }
+  100% {
+    transform: scale(1.06, 0.94) skewX(-2deg);
+  }
+}
+
+/* Embers */
+.ember {
+  position: absolute;
+  bottom: -2%;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #ffb347;
+  box-shadow: 0 0 8px 2px rgba(255, 140, 30, 0.8);
+  opacity: 0;
+  animation: ember-rise var(--t) ease-out var(--ed) infinite;
+}
+@keyframes ember-rise {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), -75vh) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* Impact flash */
+.intro-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 52%, rgba(255, 235, 190, 0.95) 0%, rgba(255, 120, 30, 0.5) 30%, transparent 62%);
+  opacity: 0;
+  animation: flash 0.55s ease-out 1.2s both;
+}
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 3D stage */
+.intro-stage {
+  position: relative;
+  perspective: 900px;
+  perspective-origin: 50% 40%;
+  animation: shake 0.45s linear 1.2s;
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-7px, 5px);
+  }
+  40% {
+    transform: translate(6px, -4px);
+  }
+  60% {
+    transform: translate(-4px, 3px);
+  }
+  80% {
+    transform: translate(3px, -2px);
+  }
+}
+.intro-lockup {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 3vw, 36px);
+  transform-style: preserve-3d;
+}
+
+/* Hammer mark */
+.intro-mark-wrap {
+  position: relative;
+  transform-style: preserve-3d;
+}
+.intro-mark {
+  display: block;
+  width: clamp(90px, 18vw, 190px);
+  height: auto;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 22px rgba(255, 120, 30, 0.35));
+  animation: hammer-drop 1.6s linear 0.25s both;
+  will-change: transform;
+}
+@keyframes hammer-drop {
+  0% {
+    transform: translate3d(0, -120vh, 420px) rotateX(75deg) rotateZ(-30deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.6);
+  }
+  60% {
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateZ(0deg);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  72% {
+    transform: translate3d(0, -7%, 0) rotateX(-6deg) rotateZ(4deg);
+    animation-timing-function: ease-in;
+  }
+  84% {
+    transform: translate3d(0, 0, 0) rotateZ(-2deg);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateZ(0deg);
+  }
+}
+
+/* Shockwave ring at impact */
+.intro-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid #ff8a2b;
+  border-radius: 50%;
+  opacity: 0;
+  animation: ring 0.9s ease-out 1.2s both;
+}
+@keyframes ring {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(14);
+    opacity: 0;
+  }
+}
+
+/* Name reveal */
+.intro-word {
+  display: block;
+  width: clamp(180px, 42vw, 440px);
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(255, 120, 30, 0.45));
+  animation: word-reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1.28s both;
+}
+@keyframes word-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    transform: translateX(-34px) scale(0.96);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(-20% -20% -20% -20%);
+    transform: none;
+    opacity: 1;
+  }
+}
+
+
+/* Warm glow right behind the logo, flares at impact */
+.intro-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1100px, 130vw);
+  height: 60vh;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 110, 20, 0.55) 0%, rgba(214, 60, 10, 0.25) 40%, transparent 70%);
+  filter: blur(30px);
+  opacity: 0;
+  animation: glow 3.2s ease-out forwards;
+}
+@keyframes glow {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.75;
+  }
+}
+
+/* Reduced motion: show the finished scene without any movement */
+@media (prefers-reduced-motion: reduce) {
+  .intro *,
+  .intro-scroll {
+    animation: none !important;
+  }
+  .intro-fire {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+  .intro-glow {
+    opacity: 0.75;
+  }
+  .ember,
+  .intro-ring,
+  .intro-flash {
+    display: none;
+  }
+  .intro-scroll {
+    transform: translateX(-50%);
+  }
+}
+
+/* Looping quotes under the logo, shown after the drop */
+.intro-stage {
+  position: relative;
+}
+.intro-quotes {
+  position: absolute;
+  top: calc(100% + clamp(18px, 4vh, 34px));
+  left: 50%;
+  width: min(92vw, 760px);
+  transform: translateX(-50%);
+  text-align: center;
+  perspective: 700px;
+}
+.intro-quote {
+  color: #f3f2ee;
+  font-size: clamp(1.05rem, 2.6vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 18px rgba(0, 0, 0, 0.85), 0 0 36px rgba(0, 0, 0, 0.6);
+  animation:
+    quote-in 0.9s ease both,
+    quote-out 0.9s ease calc(var(--q, 20000ms) - 0.9s) forwards;
+}
+.intro-quote::before,
+.intro-quote::after {
+  color: #e8652d;
+}
+.intro-quote::before {
+  content: '“';
+  margin-right: 0.15em;
+}
+.intro-quote::after {
+  content: '”';
+  margin-left: 0.15em;
+}
+@keyframes quote-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) rotateX(-55deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes quote-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px) rotateX(55deg);
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-quote {
+    opacity: 1;
+    transform: none;
+  }
+}

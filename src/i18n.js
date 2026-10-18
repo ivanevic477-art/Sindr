@@ -119,6 +119,11 @@ export const translations = {
       error: 'Something went wrong. Please e-mail us directly at ivanevic477@gmail.com.',
     },
     footer: 'All rights reserved.',
+    introQuotes: [
+      'We are here to forge your websites',
+      'Best website forgers',
+      'Only the best for our clients',
+    ],
   },
 
   hr: {
@@ -241,5 +246,10 @@ export const translations = {
       error: 'Nešto je pošlo po zlu. Molimo pošaljite nam e-mail izravno na ivanevic477@gmail.com.',
     },
     footer: 'Sva prava pridržana.',
+    introQuotes: [
+      'Ovdje smo da iskujemo vaše web stranice',
+      'Najbolji kovači web stranica',
+      'Samo najbolje za naše klijente',
+    ],
   },
 }
